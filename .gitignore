@@ -1,0 +1,9 @@
+# Raw client and downloaded material (processed copies live in shared/)
+source-assets/
+# Build and review tooling, notes
+tools/
+docs/
+.playwright-mcp/
+*.log
+.DS_Store
+Thumbs.db
