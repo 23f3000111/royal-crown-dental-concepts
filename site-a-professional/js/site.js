@@ -31,19 +31,34 @@
         '<span class="row__n">0' + (i + 1) + '</span><span class="row__t">' + esc(r[1]) + '</span><span class="row__d">' + esc(r[2]) + '</span>' +
         '<span class="row__go">' + RC.icon('right') + '</span></button></li>';
     }).join('');
-    var float = $('[data-rows-float]'), img = $('img', float), list = $('[data-rows]');
-    if (matchMedia('(hover: none)').matches || RC.reducedMotion()) return;
+    var float = $('[data-rows-float]'), img = $('img', float), list = $('[data-rows]'), section = $('#schedule'), pill = $('.hd__pill');
     var g = window.gsap;
-    var xTo = g ? g.quickTo(float, 'x', { duration: 0.6, ease: 'power3' }) : null, yTo = g ? g.quickTo(float, 'y', { duration: 0.6, ease: 'power3' }) : null;
+    if (matchMedia('(hover: none)').matches || RC.reducedMotion() || !g) return;
+    var xTo = g.quickTo(float, 'x', { duration: 0.6, ease: 'power3' }), yTo = g.quickTo(float, 'y', { duration: 0.6, ease: 'power3' }), last = null;
+    // The preview is positioned inside the section: it sits beside the pointer and never goes off screen or under the header
+    function place(p, jump) {
+      var s = section.getBoundingClientRect(), w = float.offsetWidth, h = float.offsetHeight;
+      var minTop = Math.max(0, pill.getBoundingClientRect().bottom) + 12;
+      var x = Math.min(p.clientX + 32, innerWidth - w - 24) - s.left;
+      var y = Math.max(minTop, Math.min(p.clientY - h / 2, innerHeight - h - 12)) - s.top;
+      if (jump) { xTo(x, x); yTo(y, y); } else { xTo(x); yTo(y); }
+    }
     list.addEventListener('pointermove', function (e) {
       var row = e.target.closest('.row');
       if (!row) return;
       if (img.getAttribute('src') !== row.getAttribute('data-img')) img.src = row.getAttribute('data-img');
-      var r = list.getBoundingClientRect();
-      if (xTo) { xTo(e.clientX - r.left); yTo(e.clientY - r.top); }
+      last = { clientX: e.clientX, clientY: e.clientY };
+      place(last, !float.classList.contains('is-on'));
       float.classList.add('is-on');
     });
     list.addEventListener('pointerleave', function () { float.classList.remove('is-on'); });
+    // Wheel scrolling moves the rows under a still pointer: follow, or hide once the pointer is off the list
+    addEventListener('scroll', function () {
+      if (!last || !float.classList.contains('is-on')) return;
+      var r = list.getBoundingClientRect();
+      if (last.clientY < r.top || last.clientY > r.bottom) float.classList.remove('is-on');
+      else place(last);
+    }, { passive: true });
   }
 
   /* ---------- Real results ---------- */
@@ -109,11 +124,12 @@
 
     // treatments: the section pins and the cards slide past
     var track = $('[data-care-track]'), bar = $('[data-care-bar]');
-    var dist = function () { return Math.max(0, track.scrollWidth - track.parentElement.clientWidth); };
+    // how far the track travels so the last card stops inside the screen (the rail is padded on the left)
+    var dist = function () { var rail = track.parentElement; return Math.max(0, track.scrollWidth + parseFloat(getComputedStyle(rail).paddingLeft) - rail.clientWidth); };
     g.to(track, { x: function () { return -dist(); }, ease: 'none',
       scrollTrigger: { trigger: '[data-care-pin]', start: 'top top', end: function () { return '+=' + dist(); }, pin: true, scrub: 0.8, invalidateOnRefresh: true, anticipatePin: 1,
         onUpdate: function (self) { bar.style.transform = 'scaleX(' + self.progress.toFixed(3) + ')'; } } });
-    g.from('.tcard', { y: 80, autoAlpha: 0, duration: 1.1, ease: 'expo.out', stagger: 0.06, scrollTrigger: { trigger: '.care', start: 'top 70%', once: true } });
+    g.fromTo('.tcard', { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', stagger: 0.06, clearProps: 'transform', scrollTrigger: { trigger: '.care', start: 'top 70%', once: true } });
 
     // reviews drift sideways as you scroll
     g.fromTo('.reviews__track', { x: 0 }, { x: function () { var t = $('.reviews__track'); return -Math.max(0, t.scrollWidth - innerWidth + 64); }, ease: 'none',

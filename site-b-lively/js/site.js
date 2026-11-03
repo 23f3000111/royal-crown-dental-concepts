@@ -236,11 +236,12 @@
     }
     g.to('.hero__collage', { yPercent: -10, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
     g.to('.hero__tooth', { rotation: 25, yPercent: 30, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
-    // icons bounce in, smile cards straighten as they arrive
-    g.from('.feat__ic', { scale: 0, rotation: -30, duration: 0.9, ease: 'back.out(2.4)', stagger: 0.1, scrollTrigger: { trigger: '.feats', start: 'top 80%', once: true } });
-    g.from('.treat', { y: 60, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.4)', stagger: 0.05, scrollTrigger: { trigger: '.treats__grid', start: 'top 82%', once: true } });
-    g.from('.smile-card', { y: 90, rotation: function (i) { return i % 2 ? 8 : -8; }, autoAlpha: 0, duration: 1, ease: 'back.out(1.4)', stagger: 0.08, scrollTrigger: { trigger: '.smiles__row', start: 'top 85%', once: true } });
-    g.from('.tip', { y: 70, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.4)', stagger: 0.08, scrollTrigger: { trigger: '.tips__grid', start: 'top 85%', once: true } });
+    // icons bounce in, smile cards straighten as they arrive. Explicit end values (see fx.js), and the
+    // transform is cleared afterwards so the cards' CSS hover lift and tilt work again
+    g.fromTo('.feat__ic', { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.9, ease: 'back.out(2.4)', stagger: 0.1, clearProps: 'transform', scrollTrigger: { trigger: '.feats', start: 'top 80%', once: true } });
+    g.fromTo('.treat', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'back.out(1.4)', stagger: 0.05, clearProps: 'transform', scrollTrigger: { trigger: '.treats__grid', start: 'top 82%', once: true } });
+    g.fromTo('.smile-card', { y: 90, rotation: function (i) { return i % 2 ? 8 : -8; }, autoAlpha: 0 }, { y: 0, rotation: 0, autoAlpha: 1, duration: 1, ease: 'back.out(1.4)', stagger: 0.08, clearProps: 'transform', scrollTrigger: { trigger: '.smiles__row', start: 'top 85%', once: true } });
+    g.fromTo('.tip', { y: 70, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'back.out(1.4)', stagger: 0.08, clearProps: 'transform', scrollTrigger: { trigger: '.tips__grid', start: 'top 85%', once: true } });
   }
 
   document.addEventListener('DOMContentLoaded', function () {

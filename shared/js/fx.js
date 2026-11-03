@@ -16,6 +16,8 @@
     RC.fx.on = true;
     var ease = 'expo.out';
 
+    /* Reveals give explicit end values (fromTo): a ScrollTrigger refresh re-reads "current" values,
+       and on cards with a CSS transform transition that read lands mid-transition and the card stays shifted */
     RC.$$('[data-reveal]').forEach(function (el) {
       if (el.closest('[data-reveal-manual]')) return;
       var type = el.getAttribute('data-reveal') || 'up';
@@ -31,15 +33,15 @@
         g.fromTo(el, { clipPath: 'inset(16% 12% 16% 12% round 28px)' }, { clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 1.4, ease: 'expo.inOut', delay: delay, scrollTrigger: st, clearProps: 'clipPath' });
         if (img) g.fromTo(img, { scale: 1.3 }, { scale: 1, duration: 1.6, ease: 'expo.out', delay: delay, scrollTrigger: st });
       } else if (type === 'scale') {
-        g.from(el, { scale: 0.86, autoAlpha: 0, duration: 1.1, ease: 'back.out(1.6)', delay: delay, scrollTrigger: st });
+        g.fromTo(el, { scale: 0.86, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 1.1, ease: 'back.out(1.6)', delay: delay, scrollTrigger: st, clearProps: 'transform' });
       } else if (type === 'pop') {
-        g.from(el, { scale: 0.3, rotation: -12, autoAlpha: 0, duration: 0.9, ease: 'back.out(2.2)', delay: delay, scrollTrigger: st });
+        g.fromTo(el, { scale: 0.3, rotation: -12, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 0.9, ease: 'back.out(2.2)', delay: delay, scrollTrigger: st });
       } else if (type === 'stagger') {
-        g.from(el.children, { y: 46, autoAlpha: 0, duration: 1, ease: ease, stagger: 0.08, delay: delay, scrollTrigger: st });
+        g.fromTo(el.children, { y: 46, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: ease, stagger: 0.08, delay: delay, scrollTrigger: st, clearProps: 'transform' });
       } else if (type === 'fade') {
         g.from(el, { autoAlpha: 0, duration: 1.2, ease: 'power2.out', delay: delay, scrollTrigger: st });
       } else {
-        g.from(el, { y: 56, autoAlpha: 0, duration: 1.15, ease: ease, delay: delay, scrollTrigger: st, clearProps: 'transform' });
+        g.fromTo(el, { y: 56, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.15, ease: ease, delay: delay, scrollTrigger: st, clearProps: 'transform' });
       }
     });
 
@@ -71,13 +73,15 @@
       g.fromTo(s.words, { opacity: 0.16 }, { opacity: 1, ease: 'none', stagger: 0.1, scrollTrigger: { trigger: el, start: 'top 78%', end: 'bottom 42%', scrub: 0.6 } });
     });
 
-    /* Marquees: duplicate the track, loop it, and let scroll speed push it along */
+    /* Marquees: repeat the set until the loop always covers the screen (a set can be narrower than a laptop),
+       slide by exactly one set, and let scroll speed push it along. Each track's end padding equals its gap. */
     var marquees = RC.$$('[data-marquee]').map(function (el) {
-      var track = el.firstElementChild;
-      track.innerHTML += track.innerHTML;
-      RC.$$('[id]', track).forEach(function (n, i) { if (i >= track.children.length / 2) n.removeAttribute('id'); });
-      var right = el.getAttribute('data-dir') === 'right';
-      return g.fromTo(track, { xPercent: right ? -50 : 0 }, { xPercent: right ? 0 : -50, duration: +(el.getAttribute('data-speed') || 30), ease: 'none', repeat: -1 });
+      var track = el.firstElementChild, set = track.innerHTML, ids = RC.$$('[id]', track).length;
+      var copies = 1 + Math.max(1, Math.ceil(el.clientWidth / Math.max(track.scrollWidth, 1)));
+      for (var i = 1; i < copies; i++) track.innerHTML += set;
+      RC.$$('[id]', track).forEach(function (n, k) { if (k >= ids) n.removeAttribute('id'); });
+      var right = el.getAttribute('data-dir') === 'right', step = 100 / copies;
+      return g.fromTo(track, { xPercent: right ? -step : 0 }, { xPercent: right ? 0 : -step, duration: +(el.getAttribute('data-speed') || 30), ease: 'none', repeat: -1 });
     });
     if (marquees.length) {
       ST.create({ onUpdate: function (self) {
