@@ -50,7 +50,7 @@ section { position: relative; }
 .hd__cta { --h: 52px; }
 
 /* ---------- Hero ---------- */
-.hero { height: 100vh; min-height: 780px; max-height: 1100px; overflow: hidden; color: var(--ink);
+.hero { height: 100vh; min-height: 780px; max-height: 1100px; overflow: hidden; overflow: clip; color: var(--ink);
   background: radial-gradient(120% 90% at 0% 100%, #DDF0FB 0%, rgba(221, 240, 251, 0) 60%), linear-gradient(180deg, #FFFFFF 0%, #F4F8FB 100%); }
 .hero__media { position: absolute; top: 0; bottom: 0; left: 43%; right: 0; will-change: transform;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 24%); mask-image: linear-gradient(90deg, transparent 0%, #000 24%); }
@@ -226,7 +226,7 @@ section { position: relative; }
 .docs__quote cite { display: block; margin-top: 18px; font-style: normal; color: var(--muted); }
 
 /* ---------- Clinic ---------- */
-.clinic { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: 70px; max-width: var(--max); margin: 0 auto; padding: 140px var(--pad); overflow: hidden; }
+.clinic { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: 70px; max-width: var(--max); margin: 0 auto; padding: 140px var(--pad); overflow: hidden; overflow: clip; }
 .clinic__head { position: sticky; top: 130px; align-self: start; display: grid; gap: 22px; justify-items: start; }
 .clinic__head > p { font-size: 18px; }
 .clinic__facts { display: grid; gap: 12px; }
@@ -241,7 +241,7 @@ section { position: relative; }
 .clinic__col figcaption { position: absolute; left: 12px; bottom: 12px; padding: 7px 12px; border-radius: 999px; background: rgba(255, 255, 255, .92); font-size: 13px; font-weight: 500; color: var(--ink); }
 
 /* ---------- Reviews ---------- */
-.reviews { padding: 130px 0 140px; overflow: hidden; background: linear-gradient(180deg, #fff, var(--tint)); }
+.reviews { padding: 130px 0 140px; overflow: hidden; overflow: clip; background: linear-gradient(180deg, #fff, var(--tint)); }
 .reviews__head { display: flex; justify-content: space-between; align-items: end; gap: 40px; max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
 .reviews__score { display: flex; align-items: center; gap: 16px; padding: 16px 22px 16px 16px; border-radius: 22px; background: #fff; text-decoration: none; color: var(--ink); box-shadow: 0 20px 40px -26px rgba(11, 31, 63, .4); }
 .reviews__g { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: var(--tint); color: #4285F4; }
@@ -314,7 +314,7 @@ section { position: relative; }
 .visit__photo img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Closing CTA and footer ---------- */
-.cta { display: grid; justify-items: center; text-align: center; gap: 22px; padding: 140px var(--pad) 90px; background: linear-gradient(180deg, #fff, #EAF6FD 70%, var(--sky)); overflow: hidden; }
+.cta { display: grid; justify-items: center; text-align: center; gap: 22px; padding: 140px var(--pad) 90px; background: linear-gradient(180deg, #fff, #EAF6FD 70%, var(--sky)); overflow: hidden; overflow: clip; }
 .cta__mark { width: 92px; }
 .cta__t { font: 400 clamp(52px, 6.4vw, 100px)/.98 var(--font-d); letter-spacing: -.045em; color: var(--ink); }
 .cta > p { max-width: 50ch; font-size: 19px; }
